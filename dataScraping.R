@@ -4,6 +4,8 @@
 
 # Instalação de bibliotecas
 install.packages("rvest")
+library(rvest)
+# 
 install.packages("ggplot2")
 install.packages("dplyr")
 install.packages("scales")
@@ -12,7 +14,6 @@ install.packages("mapproj")
 install.packages("plotly")
 
 # Ativação de bibliotecas
-library(rvest)
 library(ggplot2)
 library(dplyr)
 library(scales)
@@ -21,32 +22,34 @@ library(mapproj)
 library(plotly)
 
 #--------------------------------#
-# CARREGANDO DADOS DA PAGINA WEB #
+# CARREGANDO OS DADOS DA PAGINA WEB #
 #--------------------------------#
 
-# Carregando o código HTML da página da Web em um objeto 
-le = read_html("https://en.wikipedia.org/w/index.php?title=List_of_U.S._states_and_territories_by_life_expectancy&ol-did=928537169")
+# Carregando o código HTML da página Web em um objeto
+# https://en.wikipedia.org/w/index.php?title=List_of_U.S._states_and_territories_by_life_expectancy&ol-did=928537169
+#
+filURL <- read_html("https://en.wikipedia.org/w/index.php?title=List_of_U.S._states_and_territories_by_life_expectancy&ol-did=928537169#")
 
-# Filtrar o código HTML em 'extract' para manter apenas a tabela sobre a expectativa de vida
-le = le %>% html_nodes("table") %>% .[[2]] %>% html_table(fill=T)
-View(le) 
+# Filtrar o código HTML em "filURL" mantendo apenas a tabela sobre a expectativa de vida
+filURL <- filURL %>% html_nodes("table") %>% .[[2]] %>% html_table(fill=TRUE)
+View(filURL)
 
 #-------------------------#
-# PREPARATION DES DONNEES #
+# Extração e processamento dos dados #
 #-------------------------#
 
-# S�lection des colonnes utilis�es
-le = le[c(1,2,6,7)]
-View(le)
+# Seleção das colunas
+filURL = filURL[c(1,2,6,7)]
+View(filURL)
 
-# Renommage des colonnes ('le' = life expectancy)
-names(le)[c(3,4)] = c("le_caucasian", "le_african")
-View(le)
+# Renomeando colunas ('filURL' = life expectancy)
+names(filURL)[c(3,4)] = c("Caucasiano", "Africano")
+View(filURL)
 
-# Conversion des colonnes au format num�rique (valeurs manquantes cod�es NA)
-le$le_caucasian <- as.numeric(le$le_caucasian)
-le$le_african <- as.numeric(le$le_african)
-View(le)
+# Convertendo colunas para type numérico (valores ausentes codificados NA)
+filURL$Caucasiano <- as.numeric(filURL$Caucasiano)
+filURL$Africano <- as.numeric(filURL$Africano)
+View(filURL)
 
 # Calcul des diff�rences entre esp�rance de vie Caucasienne-Am�ricaine et Afro-Am�ricaine 
 le$le_diff = le$le_caucasian - le$le_african
